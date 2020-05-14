@@ -73,26 +73,44 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // add extension function to disable buttons while animation is in progress
+    private fun ObjectAnimator.disableViewDuringAnimation(view: View){
+        // we are adding a Listener and use an adapter class
+        // which provides default implementations of all of the listener methods)
+        addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                view.isEnabled=false
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                view.isEnabled=true
+            }
+        })
+    }
+
     private fun rotater() {
         val animator  = ObjectAnimator.ofFloat(star, View.ROTATION, -360f, 0f)
         // change the animation duration to one second
         animator.duration = 1000
         // deactivate rotate button while animation is running
-        // we are adding a Listener and use an adapter class (which provides default implementations of all of the listener methods)
-        animator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationStart(animation: Animator?) {
-                rotateButton.isEnabled=false
-            }
-
-            override fun onAnimationEnd(animation: Animator?) {
-                rotateButton.isEnabled=true
-            }
-        }
-        )
+        animator.disableViewDuringAnimation(rotateButton)
         animator.start()
     }
 
     private fun translater() {
+        // we move/translate on x axis for 200px
+        val animator = ObjectAnimator.ofFloat(
+            star, View.TRANSLATION_X, 500f
+        )
+        // we want the animation to repeat back to the original position
+        // repeatCount controls how many times it repeats after the first run
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+
+        animator.disableViewDuringAnimation(translateButton)
+
+        animator.start()
+
     }
 
     private fun scaler() {
