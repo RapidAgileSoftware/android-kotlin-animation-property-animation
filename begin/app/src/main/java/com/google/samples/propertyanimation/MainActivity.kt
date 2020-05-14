@@ -130,6 +130,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fader() {
+        // using ALPHA: 0=invisible, 1 visible
+        val animator = ObjectAnimator.ofFloat(
+            star, View.ALPHA, 0f
+        )
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+        animator.duration=1000
+        animator.disableViewDuringAnimation(translateButton)
+
+        animator.start()
     }
 
     private fun colorizer() {
