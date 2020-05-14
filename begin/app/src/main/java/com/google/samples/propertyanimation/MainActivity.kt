@@ -20,6 +20,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -137,12 +138,29 @@ class MainActivity : AppCompatActivity() {
         animator.repeatCount = 1
         animator.repeatMode = ObjectAnimator.REVERSE
         animator.duration=1000
-        animator.disableViewDuringAnimation(translateButton)
+        animator.disableViewDuringAnimation(fadeButton)
 
         animator.start()
     }
 
     private fun colorizer() {
+        // we can animate any property as long as we tell ObjectAnimator how to access it
+        // here we change the backgroundColor
+
+        // this yields flashy result since colors are interpreted as Ints -> looks shitty
+        //val animator = ObjectAnimator.ofInt(star.parent, "backgroundColor", Color.BLACK, Color.RED).start()
+        // instead we want to use Argb to understand colors
+        // it pins the target api level to 21 though
+        val animator = ObjectAnimator.ofArgb(star.parent, "backgroundColor", Color.BLACK, Color.RED)
+        // do the usual stuff
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+        animator.duration=500
+        animator.disableViewDuringAnimation(colorizeButton)
+
+        animator.start()
+
+
     }
 
     private fun shower() {
