@@ -16,21 +16,25 @@
 
 package com.google.samples.propertyanimation
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var star: ImageView
-    lateinit var rotateButton: Button
-    lateinit var translateButton: Button
-    lateinit var scaleButton: Button
-    lateinit var fadeButton: Button
-    lateinit var colorizeButton: Button
-    lateinit var showerButton: Button
+    private lateinit var star: ImageView
+    private lateinit var rotateButton: Button
+    private lateinit var translateButton: Button
+    private lateinit var scaleButton: Button
+    private lateinit var fadeButton: Button
+    private lateinit var colorizeButton: Button
+    private lateinit var showerButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +74,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun rotater() {
+        val animator  = ObjectAnimator.ofFloat(star, View.ROTATION, -360f, 0f)
+        // change the animation duration to one second
+        animator.duration = 1000
+        // deactivate rotate button while animation is running
+        // we are adding a Listener and use an adapter class (which provides default implementations of all of the listener methods)
+        animator.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                rotateButton.isEnabled=false
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                rotateButton.isEnabled=true
+            }
+        }
+        )
+        animator.start()
     }
 
     private fun translater() {
