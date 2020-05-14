@@ -16,16 +16,18 @@
 
 package com.google.samples.propertyanimation
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
+import android.animation.*
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.LinearInterpolator
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.appcompat.widget.AppCompatImageView
 
 
 class MainActivity : AppCompatActivity() {
@@ -164,6 +166,59 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun shower() {
+        val container = star.parent as ViewGroup
+        val containerWidth = container.width
+        val containerHeight = container.height
+        var starW = star.width.toFloat()
+        var starH = star.height.toFloat()
+
+        // creating new View that can hold VectorDrawable
+        val newStar = AppCompatImageView(this)
+        // assign star
+        newStar.setImageResource(R.drawable.ic_star)
+        // set Layout parameter
+        newStar.layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT)
+        // adding the new View
+        container.addView(newStar)
+
+        // adding random size for new star
+        newStar.scaleX = Math.random().toFloat() * 1.5f + .1f
+        // same height and width
+        newStar.scaleY = newStar.scaleX
+        // cache the size of the new star
+        starW *=newStar.scaleX
+        starH *=newStar.scaleY
+
+        // positioning:it should appear randomly somewhere from the left edge to the right edge
+        // it can show half-way off the screen on the left (-starW / 2)
+        // to half-way off the screen on the right (with the star positioned at (containerW - starW / 2)
+        newStar.translationX = Math.random().toFloat() * containerWidth - starW / 2
+
+        // make the star fall accelerating
+        val mover = ObjectAnimator.ofFloat(newStar, View.TRANSLATION_Y,
+            -starH, containerHeight + starH)
+        mover.interpolator = AccelerateInterpolator(1f)
+        // rotate linear
+        val rotator = ObjectAnimator.ofFloat(newStar, View.ROTATION,
+            (Math.random() * 1080).toFloat())
+        rotator.interpolator = LinearInterpolator()
+
+        // running the animations parallel
+        val set = AnimatorSet()
+        set.playTogether(mover, rotator)
+        //random animation duration
+        set.duration = (Math.random() * 1500 + 500).toLong()
+
+        // remove the view at the end of the animation via listener
+        set.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                container.removeView(newStar)
+            }
+        })
+        // start
+        set.start()
     }
 
 }
